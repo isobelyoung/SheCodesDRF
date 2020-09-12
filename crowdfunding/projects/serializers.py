@@ -1,0 +1,32 @@
+from rest_framework import serializers 
+from .models import Project, Pledge
+
+class PledgeSerializer(serializers.Serializer):
+    id = serializers.ReadOnlyField()
+    amount = serializers.IntegerField()
+    comment = serializers.CharField(max_length=200)
+    anonymous = serializers.BooleanField()
+    supporter = serializers.CharField(max_length=200)
+    project_id = serializers.IntegerField()
+
+    def create(self, validated_data):
+        return Pledge.objects.create(**validated_data)
+
+class ProjectSerializer(serializers.Serializer):
+    # looking at list of projects
+    id = serializers.ReadOnlyField()
+    title = serializers.CharField(max_length=200)
+    description = serializers.CharField(max_length=None) # no text fields in serializer
+    goal = serializers.IntegerField()
+    image = serializers.URLField()
+    is_open = serializers.BooleanField()
+    date_created = serializers.DateTimeField()
+    owner = serializers.ReadOnlyField(source='owner.id')
+    # pledges = PledgeSerializer(many=True, read_only=True)
+
+    def create(self, validated_data):
+        return Project.objects.create(**validated_data) # get project from earlier, use global method create and creates new project
+
+class ProjectDetailSerializer(ProjectSerializer):
+    # when just looking at one project
+    pledges = PledgeSerializer(many=True, read_only=True)
