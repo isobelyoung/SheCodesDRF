@@ -6,11 +6,13 @@ class PledgeSerializer(serializers.Serializer):
     amount = serializers.IntegerField()
     comment = serializers.CharField(max_length=200)
     anonymous = serializers.BooleanField()
-    supporter = serializers.CharField(max_length=200)
+    supporter_id = serializers.IntegerField()
     project_id = serializers.IntegerField()
 
     def create(self, validated_data):
         return Pledge.objects.create(**validated_data)
+
+
 
 class ProjectSerializer(serializers.Serializer):
     # looking at list of projects
@@ -42,3 +44,15 @@ class ProjectDetailSerializer(ProjectSerializer):
         instance.save()
         return instance
         # update variable with new value, if no new given - use default which is existing variable
+
+class PledgeDetailSerializer(PledgeSerializer):
+
+    # where any additional fields go
+
+    def update(self, instance, validated_data):
+
+        instance.amount = validated_data.get('amount', instance.amount)
+        instance.comment = validated_data.get('comment', instance.comment)
+        instance.anonymous = validated_data.get('anonymous', instance.anonymous)
+        instance.save()
+        return instance

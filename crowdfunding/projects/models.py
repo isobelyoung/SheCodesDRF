@@ -15,6 +15,7 @@ class Project(models.Model):
         related_name='owner_projects'
         # connect project to a user, and related_name vice versa
     )
+    
 
 class Pledge(models.Model):
     amount = models.IntegerField()
