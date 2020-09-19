@@ -32,4 +32,17 @@ class Pledge(models.Model):
         on_delete = models.CASCADE,
         related_name = 'supporter_pledges'
     )
-    
+
+class Project_Update(models.Model):
+    project_update = models.TextField()
+    project = models.ForeignKey(
+        'Project',
+        on_delete=models.CASCADE,
+        related_name='project_updates'
+    )
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete = models.CASCADE,
+        related_name = 'project_owner_updates'
+    )
+    update_picture = models.URLField(blank = True)

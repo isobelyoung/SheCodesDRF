@@ -12,6 +12,17 @@ class PledgeSerializer(serializers.Serializer):
     def create(self, validated_data):
         return Pledge.objects.create(**validated_data)
 
+class PledgeDetailSerializer(PledgeSerializer):
+
+    # where any additional fields go
+
+    def update(self, instance, validated_data):
+
+        instance.amount = validated_data.get('amount', instance.amount)
+        instance.comment = validated_data.get('comment', instance.comment)
+        instance.anonymous = validated_data.get('anonymous', instance.anonymous)
+        instance.save()
+        return instance
 
 
 class ProjectSerializer(serializers.Serializer):
@@ -45,14 +56,10 @@ class ProjectDetailSerializer(ProjectSerializer):
         return instance
         # update variable with new value, if no new given - use default which is existing variable
 
-class PledgeDetailSerializer(PledgeSerializer):
 
-    # where any additional fields go
-
-    def update(self, instance, validated_data):
-
-        instance.amount = validated_data.get('amount', instance.amount)
-        instance.comment = validated_data.get('comment', instance.comment)
-        instance.anonymous = validated_data.get('anonymous', instance.anonymous)
-        instance.save()
-        return instance
+class ProjectStatusSerializer(serializers.Serializer):
+    id = serializers.ReadOnlyField()
+    project_update = serializers.CharField()
+    author_id = serializers.IntegerField()
+    project_id = serializers.IntegerField()
+    update_picture = serializers.URLField()
