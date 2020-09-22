@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     profile_picture = models.URLField(blank = True)
-    business_name = models.CharField(max_length = 200, blank = True)
+    business_name = models.CharField(max_length = 400, blank = True)
     
 
     def __str__(self):

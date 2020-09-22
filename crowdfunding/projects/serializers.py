@@ -1,5 +1,5 @@
 from rest_framework import serializers 
-from .models import Project, Pledge
+from .models import Project, Pledge, Project_Update
 
 class PledgeSerializer(serializers.Serializer):
     id = serializers.ReadOnlyField()
@@ -40,9 +40,20 @@ class ProjectSerializer(serializers.Serializer):
     def create(self, validated_data):
         return Project.objects.create(**validated_data) # get project from earlier, use global method create and creates new project
 
+class ProjectUpdateSerializer(serializers.Serializer):
+    id = serializers.ReadOnlyField()
+    project_update = serializers.CharField()
+    author_id = serializers.IntegerField()
+    project_id = serializers.IntegerField()
+    update_picture = serializers.URLField()
+
+    def create(self, validated_data):
+        return Project_Update.objects.create(**validated_data)
+
 class ProjectDetailSerializer(ProjectSerializer):
     # when just looking at one project
     pledges = PledgeSerializer(many=True, read_only=True)
+    project_updates = ProjectUpdateSerializer(many=True)
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
@@ -57,9 +68,4 @@ class ProjectDetailSerializer(ProjectSerializer):
         # update variable with new value, if no new given - use default which is existing variable
 
 
-class ProjectStatusSerializer(serializers.Serializer):
-    id = serializers.ReadOnlyField()
-    project_update = serializers.CharField()
-    author_id = serializers.IntegerField()
-    project_id = serializers.IntegerField()
-    update_picture = serializers.URLField()
+

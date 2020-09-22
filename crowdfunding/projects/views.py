@@ -2,10 +2,10 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Project, Pledge
-from .serializers import ProjectSerializer, PledgeSerializer, ProjectDetailSerializer, PledgeDetailSerializer
+from .serializers import ProjectSerializer, PledgeSerializer, ProjectDetailSerializer, PledgeDetailSerializer, ProjectUpdateSerializer
 from django.http import Http404, HttpResponse
 from rest_framework import status, permissions
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, IsSupporterOrReadOnly
 
 
 class ProjectList(APIView):
@@ -47,6 +47,7 @@ class ProjectDetail(APIView):
             return project
         except Project.DoesNotExist:
             raise Http404
+        # just for detail view !!!
 
     def get(self, request, pk):
         project = self.get_object(pk)
@@ -73,6 +74,27 @@ class ProjectDetail(APIView):
         except Http404:
             return Http404
 
+class ProjectUpdatesList(APIView):
+
+    # has to handle get, post requests which are the methods
+    def get(self, request, pk):
+        project = Project.objects.get(pk=pk)
+        updates = project.project_updates.all() 
+        serializer = ProjectUpdateSerializer(updates, many=True)
+        return Response(serializer.data)
+
+    # def post(self, request):
+    #     serializer = PledgeSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(
+    #             serializer.data,
+    #             status=status.HTTP_201_CREATED
+    #         )
+    #     return Response(
+    #         serializer.errors,
+    #         status=status.HTTP_400_BAD_REQUEST
+    #     )
 
 class PledgeList(APIView):
 
@@ -98,7 +120,7 @@ class PledgeList(APIView):
 class PledgeDetail(APIView):
 
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly
+        permissions.IsAuthenticatedOrReadOnly, IsSupporterOrReadOnly
         ]
 
     def get_object(self, pk):

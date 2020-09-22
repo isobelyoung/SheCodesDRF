@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from .models import CustomUser
-from .serializers import CustomUserSerializer
+from .serializers import CustomUserSerializer, CustomUserDetailSerializer
+from .permissions import IsOwnerOrReadOnly, IsSelfOrReadOnly
 
 class CustomUserList(APIView):
 	
@@ -21,6 +22,11 @@ class CustomUserList(APIView):
 		return Response(serializer.errors)
 		
 class CustomUserDetail(APIView):
+
+	permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsSelfOrReadOnly
+    ]
     
 	def get_object(self, pk):
 		try:
@@ -30,5 +36,28 @@ class CustomUserDetail(APIView):
 	
 	def get(self, request, pk):
 		user = self.get_object(pk)
-		serializer = CustomUserSerializer(user)
+		serializer = CustomUserDetailSerializer(user)
 		return Response(serializer.data)
+
+	def put(self, request, pk):
+		user = self.get_object(pk)
+		data = request.data
+		serializer = CustomUserDetailSerializer(
+			instance = user,
+			data = data,
+			partial = True
+        )
+		if serializer.is_valid():
+			serializer.save()
+			return Response(
+                serializer.data,
+                status=status.HTTP_202_ACCEPTED
+                )
+
+	def delete(self, request, pk):
+		try:
+			user_to_delete = self.get_object(pk)
+			user_to_delete.delete()
+			return Response(status=status.HTTP_204_NO_CONTENT)
+		except Http404:
+			return Http404
