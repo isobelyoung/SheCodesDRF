@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 class Project(models.Model):
     title = models.CharField(max_length=200)
@@ -7,8 +8,9 @@ class Project(models.Model):
     goal = models.IntegerField()
     image = models.URLField()
     is_open = models.BooleanField()
+    no_pledges = models.IntegerField(default=0)
     date_created = models.DateTimeField() 
-    # owner = models.CharField(max_length=200, default=0)
+    end_date = models.DateTimeField()
     owner = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
@@ -35,6 +37,7 @@ class Pledge(models.Model):
 
 class Project_Update(models.Model):
     project_update = models.TextField()
+    project_update_date = models.DateTimeField()
     project = models.ForeignKey(
         'Project',
         on_delete=models.CASCADE,
