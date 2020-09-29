@@ -60,6 +60,7 @@ class ProjectSerializer(serializers.Serializer):
     date_created = serializers.DateTimeField(default=timezone.now())
     end_date = serializers.DateTimeField(default=timezone.now())
     owner = serializers.ReadOnlyField(source='owner.id')
+    
     # pledges = PledgeSerializer(many=True, read_only=True)
 
     def get_no_pledges(self, obj):
@@ -69,6 +70,16 @@ class ProjectSerializer(serializers.Serializer):
             count += 1
         return count
 
+    def project_is_open(self, obj):
+        if timezone.now() > obj.end_date:
+            project_is_open = False
+        else:
+            project_is_open = True
+        return project_is_open
+
+    def get_no_supporters(self, obj):
+        filtered_supporters = []
+        all_supporters = obj.pledges.all()
         for supporter in all_supporters:
             temp_supporter = supporter.supporter
             if temp_supporter in filtered_supporters:
