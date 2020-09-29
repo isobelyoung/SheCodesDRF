@@ -1,5 +1,8 @@
 from rest_framework import serializers 
 from .models import CustomUser
+from projects.models import Pledge
+from django.core import serializers as s
+
 
 class CustomUserSerializer(serializers.Serializer):
     id = serializers.ReadOnlyField()
@@ -11,9 +14,17 @@ class CustomUserSerializer(serializers.Serializer):
     password = serializers.CharField(write_only = True)
     profile_picture = serializers.URLField(max_length = 200)
     business_name = serializers.CharField(max_length = 200)
+    user_pledges = serializers.SerializerMethodField()
 
     def create(self, validated_data):
         return CustomUser.objects.create_user(**validated_data)
+
+    def get_user_pledges(self, obj):
+
+        user_pledges = Pledge.objects.filter(supporter=obj)
+        data = s.serialize("json", user_pledges, fields=('amount', 'comment', 'project'))
+        return data
+
 
 class CustomUserDetailSerializer(CustomUserSerializer):
 

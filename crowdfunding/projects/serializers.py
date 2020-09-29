@@ -69,6 +69,14 @@ class ProjectSerializer(serializers.Serializer):
             count += 1
         return count
 
+        for supporter in all_supporters:
+            temp_supporter = supporter.supporter
+            if temp_supporter in filtered_supporters:
+                pass
+            else:
+                filtered_supporters.append(supporter)
+            return len(filtered_supporters)
+
     def create(self, validated_data):
         return Project.objects.create(**validated_data) # get project from earlier, use global method create and creates new project
 
