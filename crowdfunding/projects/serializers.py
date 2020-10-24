@@ -1,6 +1,7 @@
 from rest_framework import serializers 
 from .models import Project, Pledge, Project_Update
-from django.utils import timezone, timedelta
+from django.utils import timezone
+from datetime import timedelta
 
 
 class PledgeSerializer(serializers.Serializer):
