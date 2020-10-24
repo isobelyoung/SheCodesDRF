@@ -1,6 +1,6 @@
 from rest_framework import serializers 
 from .models import Project, Pledge, Project_Update
-from django.utils import timezone
+from django.utils import timezone, timedelta
 
 
 class PledgeSerializer(serializers.Serializer):
@@ -30,7 +30,6 @@ class ProjectUpdateSerializer(serializers.Serializer):
     id = serializers.ReadOnlyField()
     project_update = serializers.CharField()
     project_update_date = serializers.DateTimeField(default=timezone.now())
-    end_date = serializers.DateTimeField()
     author_id = serializers.IntegerField()
     project_id = serializers.IntegerField()
     update_picture = serializers.URLField()
@@ -56,9 +55,9 @@ class ProjectSerializer(serializers.Serializer):
     goal = serializers.IntegerField()
     no_pledges = serializers.SerializerMethodField()
     image = serializers.URLField()
-    is_open = serializers.BooleanField()
+    is_open = serializers.BooleanField(default=True)
     date_created = serializers.DateTimeField(default=timezone.now())
-    end_date = serializers.DateTimeField(default=timezone.now())
+    end_date = serializers.DateTimeField(default=timezone.now() + timedelta(days=30))
     owner = serializers.ReadOnlyField(source='owner.id')
     
     # pledges = PledgeSerializer(many=True, read_only=True)
